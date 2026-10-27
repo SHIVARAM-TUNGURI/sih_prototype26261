@@ -5,6 +5,10 @@ import {
   XCircle, Clock, FileText, Eye, Hash, Loader2, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { getApplicationReport, verifyDocumentHash, getAuditLog, submitDecision } from '../api';
+import ScoreCard from '../components/ScoreCard';
+import StatusBadge from '../components/StatusBadge';
+import HeatmapModal from '../components/HeatmapModal';
+import DecisionModal from '../components/DecisionModal';
 
 const TABS = ['Overview', 'Documents', 'Cross-Verification', 'Compliance', 'Audit Log'];
 
@@ -101,7 +105,6 @@ export default function ApplicationDetail() {
   /* ── Loading / error states ─────────────────────────────────── */
   if (loading) return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <div className="flex items-center justify-center h-64">
         <Loader2 size={32} className="animate-spin text-blue-500" />
         <span className="ml-3 text-gray-500">Loading application report…</span>
@@ -111,7 +114,6 @@ export default function ApplicationDetail() {
 
   if (error) return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-12 text-center">
         <AlertTriangle size={40} className="text-red-400 mx-auto mb-3" />
         <p className="text-red-600 font-medium">{error}</p>
@@ -133,8 +135,6 @@ export default function ApplicationDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-
       {/* ── Header ── */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4">
@@ -161,10 +161,10 @@ export default function ApplicationDetail() {
           {/* Score cards */}
           {score_breakdown && (
             <div className="grid grid-cols-3 gap-4 mt-4">
-              <ScoreCard label="Trust Score" value={score_breakdown.trust_score} icon={<Shield size={20}/>}
-                thresholds={{ good: 80, warn: 50 }} suffix="/100" />
-              <ScoreCard label="Compliance Score" value={score_breakdown.compliance_score} icon={<ClipboardCheck size={20}/>}
-                thresholds={{ good: 80, warn: 50 }} suffix="/100" />
+              <ScoreCard label="Trust Score" value={score_breakdown.trust_score} icon={Shield}
+                subtitle="out of 100" />
+              <ScoreCard label="Compliance Score" value={score_breakdown.compliance_score} icon={ClipboardCheck}
+                subtitle="out of 100" />
               <div className={`rounded-xl p-4 border ${routeStyle(score_breakdown.route)}`}>
                 <p className="text-xs font-semibold uppercase tracking-wide mb-1 opacity-70">Review Route</p>
                 <p className="text-lg font-bold capitalize">{score_breakdown.route?.replace('-', ' ') || '—'}</p>
