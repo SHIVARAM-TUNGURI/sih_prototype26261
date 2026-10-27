@@ -1,0 +1,116 @@
+{
+  "_meta": {
+    "description": "Simulated external government registries (DigiLocker, MCA, Land Records, State Higher Education)",
+    "notice": "All data in this file is completely synthetic and fabricated for hackathon prototype testing only."
+  },
+  "trusts": [
+    {
+      "registration_number": "MH/TR/2019/00456",
+      "trust_name": "Vidya Bharati Educational Trust",
+      "registration_date": "10-01-2019",
+      "authority": "Charity Commissioner, Maharashtra",
+      "status": "active",
+      "address": "45, MG Road, Pune, Maharashtra - 411001"
+    },
+    {
+      "registration_number": "MH/TR/2019/00789",
+      "trust_name": "Vidya Bharti Educational Trust",
+      "registration_date": "10-01-2019",
+      "authority": "Charity Commissioner, Maharashtra",
+      "status": "active",
+      "address": "Plot 78, Wardha Road, Nagpur, Maharashtra - 440001"
+    },
+    {
+      "registration_number": "KA/TR/2015/00122",
+      "trust_name": "Sunrise Educational Society",
+      "registration_date": "20-07-2015",
+      "authority": "Registrar of Societies, Karnataka",
+      "status": "active",
+      "address": "Plot 12, Industrial Area, Bangalore, Karnataka"
+    },
+    {
+      "registration_number": "GJ/TR/2020/00344",
+      "trust_name": "National Knowledge Foundation",
+      "registration_date": "10-01-2020",
+      "authority": "Charity Commissioner, Gujarat",
+      "status": "suspended",
+      "address": "Block C, Ring Road, Ahmedabad, Gujarat"
+    }
+  ],
+  "land_records": [
+    {
+      "survey_number": "145/A",
+      "owner_name": "Vidya Bharati Educational Trust",
+      "location": "Hinjewadi, Pune, Maharashtra",
+      "area_acres": 5.0,
+      "registration_date": "15-03-2020",
+      "encumbrance_status": "Clear"
+    },
+    {
+      "survey_number": "78/B",
+      "owner_name": "Vidya Bharti Educational Trust",
+      "location": "Nagpur, Maharashtra",
+      "area_acres": 2.0,
+      "registration_date": "12-05-2021",
+      "encumbrance_status": "Clear"
+    }
+  ],
+  "faculty_registry": [
+    {
+      "faculty_id": "FAC001",
+      "name": "Dr. Anita Sharma",
+      "qualification": "Ph.D. Computer Sci",
+      "current_institution": "Vidya Bharati Institute of Technology",
+      "designation": "Professor"
+    },
+    {
+      "faculty_id": "FAC002",
+      "name": "Dr. Suresh Patel",
+      "qualification": "Ph.D. Electronics",
+      "current_institution": "Vidya Bharati Institute of Technology",
+      "designation": "Professor"
+    },
+    {
+      "faculty_id": "FAC003",
+      "name": "Mr. Amit Kumar",
+      "qualification": "M.Tech Mechanical",
+      "current_institution": "Vidya Bharati Institute of Technology",
+      "designation": "Asst. Professor"
+    },
+    {
+      "faculty_id": "FAC004",
+      "name": "Dr. Priya Nair",
+      "qualification": "Ph.D. Mathematics",
+      "current_institution": "Vidya Bharati Institute of Technology",
+      "designation": "Associate Professor"
+    },
+    {
+      "faculty_id": "FAC005",
+      "name": "Ms. Kavita Reddy",
+      "qualification": "M.Tech Civil",
+      "current_institution": "Vidya Bharati Institute of Technology",
+      "designation": "Asst. Professor"
+    },
+    {
+      "faculty_id": "FAC006",
+      "name": "Dr. Vikram Singh",
+      "qualification": "Ph.D. Computer Sci",
+      "current_institution": "Vidya Bharati Institute of Technology",
+      "designation": "Professor"
+    },
+    {
+      "faculty_id": "FAC007",
+      "name": "Dr. Rajesh Verma",
+      "qualification": "Ph.D. Computer Science",
+      "current_institution": "ABC Engineering College",
+      "designation": "Professor"
+    },
+    {
+      "faculty_id": "FAC008",
+      "name": "Mr. Ravi Tiwari",
+      "qualification": "B.Tech IT",
+      "current_institution": "",
+      "designation": "Lecturer"
+    }
+  ]
+}

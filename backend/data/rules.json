@@ -1,0 +1,156 @@
+{
+  "_meta": {
+    "description": "Validation rules for AICTE New Engineering Institution Approval",
+    "version": "1.0.0",
+    "source": "Based on AICTE Approval Process Handbook (representative rules for SIH26261 demo)",
+    "last_updated": "2026-10-26"
+  },
+  "rules": [
+    {
+      "id": "R1",
+      "description": "Minimum land area must be at least 2.5 acres for engineering institutions",
+      "field": "land.total_area_acres",
+      "operator": "gte",
+      "threshold": 2.5,
+      "clause_reference": "APH-2024-3.2.1",
+      "severity": "critical",
+      "category": "land",
+      "error_message": "Land area ({value} acres) is below the minimum requirement of 2.5 acres.",
+      "suggestion": "Acquire additional land to meet the 2.5-acre minimum or provide documentation for approved exemptions (e.g., multi-storey building approval in metro cities)."
+    },
+    {
+      "id": "R2",
+      "description": "Trust or Society must be registered and found in the official registry",
+      "field": "trust.registration_number",
+      "operator": "in_registry",
+      "threshold": "trusts",
+      "clause_reference": "APH-2024-2.1.3",
+      "severity": "critical",
+      "category": "governance",
+      "error_message": "Trust/Society registration number '{value}' was not found in the official registry.",
+      "suggestion": "Verify the registration number is correct. Ensure the trust is registered under the Indian Trusts Act, 1882 or Societies Registration Act, 1860."
+    },
+    {
+      "id": "R3",
+      "description": "Faculty-to-student ratio must be at least 1:20 (ratio >= 0.05)",
+      "field": "faculty.ratio",
+      "operator": "ratio_gte",
+      "threshold": 0.05,
+      "clause_reference": "APH-2024-5.3.1",
+      "severity": "critical",
+      "category": "faculty",
+      "error_message": "Faculty-student ratio ({value}) is below the minimum required ratio of 1:20 (0.05).",
+      "suggestion": "Recruit additional qualified faculty members to achieve the required 1:20 faculty-student ratio before resubmitting."
+    },
+    {
+      "id": "R4",
+      "description": "All faculty members must hold minimum qualification (M.Tech/M.E. or PhD for engineering programs)",
+      "field": "faculty.members",
+      "operator": "all_meet",
+      "threshold": {
+        "qualification_minimum": ["PhD", "M.Tech", "M.E.", "M.S."],
+        "check_field": "qualification"
+      },
+      "clause_reference": "APH-2024-5.4.2",
+      "severity": "major",
+      "category": "faculty",
+      "error_message": "Faculty member '{name}' holds '{qualification}' which does not meet the minimum qualification requirement.",
+      "suggestion": "Ensure all faculty members hold at least M.Tech/M.E. or equivalent postgraduate degree. Faculty with only B.Tech/B.E. are not eligible for engineering program teaching positions."
+    },
+    {
+      "id": "R5",
+      "description": "Document integrity check - tamper detection score must be below 0.4",
+      "field": "documents.tamper_score",
+      "operator": "lte",
+      "threshold": 0.4,
+      "clause_reference": "APH-2024-7.1.5",
+      "severity": "critical",
+      "category": "documents",
+      "error_message": "Document '{document_name}' has a tamper score of {value} (threshold: 0.4). Possible tampering detected.",
+      "suggestion": "Re-upload original, unmodified documents. Scanned copies should be certified by a gazetted officer. Digital documents must retain original metadata."
+    },
+    {
+      "id": "R6",
+      "description": "NOC (No Objection Certificate) must not be expired and must be issued by a recognized authority",
+      "field": "documents.noc",
+      "operator": "valid_date",
+      "threshold": {
+        "expiry_field": "noc_expiry_date",
+        "issuer_field": "noc_issuing_authority",
+        "recognized_authorities": [
+          "State Government",
+          "University Grants Commission",
+          "Directorate of Technical Education",
+          "State Technical Education Board"
+        ]
+      },
+      "clause_reference": "APH-2024-2.3.1",
+      "severity": "critical",
+      "category": "documents",
+      "error_message": "NOC is either expired (expiry: {expiry_date}) or issued by an unrecognized authority ('{issuer}').",
+      "suggestion": "Obtain a valid NOC from the State Government or affiliating university. Ensure the NOC is current and issued within the approval cycle year."
+    },
+    {
+      "id": "R7",
+      "description": "Trust/Society registration must be at least 1 year before the application submission date",
+      "field": "trust.registration_date",
+      "operator": "valid_date",
+      "threshold": {
+        "min_age_years": 1,
+        "reference_field": "application.submission_date"
+      },
+      "clause_reference": "APH-2024-2.1.5",
+      "severity": "major",
+      "category": "governance",
+      "error_message": "Trust registration date ({value}) is less than 1 year before the application date ({reference_date}).",
+      "suggestion": "The trust must have been registered at least 1 year prior to the application date. If recently registered, wait until the eligibility period is met."
+    },
+    {
+      "id": "R8",
+      "description": "Minimum built-up carpet area must be at least 5000 sq ft per 60-student intake",
+      "field": "infrastructure.carpet_area_sqft",
+      "operator": "gte",
+      "threshold": 5000,
+      "clause_reference": "APH-2024-4.2.3",
+      "severity": "major",
+      "category": "infrastructure",
+      "error_message": "Built-up carpet area ({value} sq ft) is below the minimum requirement of 5000 sq ft per 60-student intake.",
+      "suggestion": "Expand the built-up area to meet the 5000 sq ft minimum per 60-student intake. Provide updated building completion certificate from a registered architect."
+    },
+    {
+      "id": "R9",
+      "description": "Application submission date must not be in the future",
+      "field": "application.submission_date",
+      "operator": "valid_date",
+      "threshold": {
+        "must_not_be_future": true
+      },
+      "clause_reference": "APH-2024-1.1.2",
+      "severity": "critical",
+      "category": "documents",
+      "error_message": "Application submission date ({value}) is in the future.",
+      "suggestion": "Correct the application submission date. The date must reflect the actual date of submission and cannot be a future date."
+    },
+    {
+      "id": "R10",
+      "description": "All mandatory documents must be submitted with the application",
+      "field": "documents.submitted",
+      "operator": "exists",
+      "threshold": [
+        "trust_registration_certificate",
+        "land_documents",
+        "noc_state_government",
+        "building_plan_approval",
+        "faculty_list",
+        "affidavit",
+        "financial_statements",
+        "fire_safety_certificate"
+      ],
+      "clause_reference": "APH-2024-7.2.1",
+      "severity": "critical",
+      "category": "documents",
+      "error_message": "Missing mandatory document(s): {missing_documents}.",
+      "suggestion": "Upload all mandatory documents before submission. Incomplete applications are automatically rejected without further review."
+    }
+  ]
+}
