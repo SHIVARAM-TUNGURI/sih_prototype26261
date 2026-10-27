@@ -23,6 +23,14 @@ PENALTY_AREA_MISMATCH = 15
 PENALTY_REGISTRY_FAILURE = 20
 PENALTY_FACULTY_CONFLICT = 10
 
+# Maximum total deduction per category, so repeated findings of the same kind
+# (e.g. 6 faculty conflicts, or the same name mismatch seen in several documents)
+# cannot push the score to 0 on their own.
+CAP_NAME_MISMATCH = 30
+CAP_AREA_MISMATCH = 15
+CAP_REGISTRY_FAILURE = 20
+CAP_FACULTY_CONFLICT = 20
+
 
 def calculate_compliance_score(rule_results: list[dict[str, Any]]) -> float:
     """
@@ -118,11 +126,23 @@ def calculate_trust_score(
             })
 
         # ── Cross-verification penalties ─────────────────────────────────
+        # Ignore exact-duplicate findings and cap the total per category.
+        seen_descriptions: set[str] = set()
+        used = {"name": 0, "area": 0, "registry": 0, "faculty": 0}
+
         for finding in findings:
-            category = finding.get("category", "").lower()
-            severity = finding.get("severity", "").lower()
+            category = (finding.get("category") or "").lower()
+            severity = (finding.get("severity") or "").lower()
+
+            desc_key = f"{category}|{finding.get('description', '')}"
+            if desc_key in seen_descriptions:
+                continue
+            seen_descriptions.add(desc_key)
 
             if "name" in category and "mismatch" in category:
+                if used["name"] >= CAP_NAME_MISMATCH:
+                    continue
+                used["name"] += PENALTY_NAME_MISMATCH
                 score -= PENALTY_NAME_MISMATCH
                 deductions.append({
                     "penalty": "name_mismatch",
@@ -131,6 +151,9 @@ def calculate_trust_score(
                 })
 
             elif "area" in category and "mismatch" in category:
+                if used["area"] >= CAP_AREA_MISMATCH:
+                    continue
+                used["area"] += PENALTY_AREA_MISMATCH
                 score -= PENALTY_AREA_MISMATCH
                 deductions.append({
                     "penalty": "area_mismatch",
@@ -139,6 +162,9 @@ def calculate_trust_score(
                 })
 
             elif "registry" in category:
+                if used["registry"] >= CAP_REGISTRY_FAILURE:
+                    continue
+                used["registry"] += PENALTY_REGISTRY_FAILURE
                 score -= PENALTY_REGISTRY_FAILURE
                 deductions.append({
                     "penalty": "registry_failure",
@@ -147,6 +173,9 @@ def calculate_trust_score(
                 })
 
             elif "faculty" in category and ("conflict" in category or "dual" in category):
+                if used["faculty"] >= CAP_FACULTY_CONFLICT:
+                    continue
+                used["faculty"] += PENALTY_FACULTY_CONFLICT
                 score -= PENALTY_FACULTY_CONFLICT
                 deductions.append({
                     "penalty": "faculty_conflict",
