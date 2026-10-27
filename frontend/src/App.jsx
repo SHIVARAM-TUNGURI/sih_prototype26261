@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import ApplicationForm from './pages/ApplicationForm';
 import ApplicationDetail from './pages/ApplicationDetail';
+import TrackStatus from './pages/TrackStatus';
 
 /**
  * Main application component with routing.
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/apply" element={<ApplicationForm />} />
+          <Route path="/track" element={<TrackStatus />} />
           <Route path="/application/:id" element={<ApplicationDetail />} />
         </Routes>
       </main>

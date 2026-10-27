@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Upload, FileText, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
 import { createApplication, uploadDocuments, processApplication } from '../api';
 
@@ -22,10 +22,9 @@ const FIELD_CONFIGS = [
   { name: 'application_date', label: 'Application Date', type: 'date' },
 ];
 
-const STEPS = ['Application Form', 'Upload Documents', 'Submit & Process'];
+const STEPS = ['Application Form', 'Upload Documents', 'Review & Submit'];
 
 export default function ApplicationForm() {
-  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -117,19 +116,16 @@ export default function ApplicationForm() {
     }
   };
 
-  /* ── UI helpers ── */
-  const routeColor = (r) => ({
-    'fast-track': 'bg-green-100 text-green-800',
-    'standard': 'bg-amber-100 text-amber-800',
-    'senior-review': 'bg-red-100 text-red-800',
-  }[r] || 'bg-gray-100 text-gray-700');
-
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900">New Engineering Institution Approval</h1>
           <p className="text-gray-500 mt-1">AICTE Application Submission Portal</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Already applied?{' '}
+            <Link to="/track" className="text-blue-600 hover:text-blue-800 font-medium">Track your application status →</Link>
+          </p>
         </div>
 
         {/* Stepper */}
@@ -269,16 +265,16 @@ export default function ApplicationForm() {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText size={28} className="text-blue-600" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">Ready to Process</h2>
-                <p className="text-gray-500 mb-2">Application <span className="font-mono font-bold text-blue-700">#{createdAppId}</span> and all documents uploaded successfully.</p>
-                <p className="text-sm text-gray-400 mb-6">Click below to run the full AI pipeline: OCR, tamper detection, cross-verification, and compliance check.</p>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Ready to Submit</h2>
+                <p className="text-gray-500 mb-2">Application <span className="font-mono font-bold text-blue-700">#{createdAppId}</span> and all documents have been uploaded successfully.</p>
+                <p className="text-sm text-gray-400 mb-6">Please review your details, then submit your application to AICTE for verification.</p>
                 <button
                   onClick={handleProcess}
                   disabled={submitting}
                   className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-base hover:bg-blue-700 disabled:opacity-60"
                 >
                   {submitting ? <Loader2 size={18} className="animate-spin" /> : null}
-                  {submitting ? 'Running AI Pipeline…' : '⚡ Process Application'}
+                  {submitting ? 'Submitting…' : 'Submit Application'}
                 </button>
               </>
             ) : (
@@ -286,28 +282,37 @@ export default function ApplicationForm() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle size={28} className="text-green-600" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Processing Complete</h2>
-                <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto mb-6">
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 font-medium mb-1">Trust Score</p>
-                    <p className="text-2xl font-bold text-blue-800">{processResult.trust_score ?? '—'}</p>
-                  </div>
-                  <div className="bg-purple-50 rounded-lg p-3">
-                    <p className="text-xs text-purple-600 font-medium mb-1">Compliance</p>
-                    <p className="text-2xl font-bold text-purple-800">{processResult.compliance_score ?? '—'}</p>
-                  </div>
-                  <div className={`${routeColor(processResult.route)} rounded-lg p-3`}>
-                    <p className="text-xs font-medium mb-1">Route</p>
-                    <p className="text-sm font-bold capitalize">{processResult.route?.replace('-', ' ') ?? '—'}</p>
-                  </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Application Submitted</h2>
+                <p className="text-gray-500 mb-1">
+                  Your application reference number is{' '}
+                  <span className="font-mono font-bold text-blue-700">#{createdAppId}</span>
+                </p>
+                <p className="text-sm text-gray-400 mb-6">
+                  Your documents have been received and are now under review by an AICTE officer.
+                  You will be notified if any clarification or additional documents are required.
+                </p>
+                <div className="max-w-md mx-auto text-left bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">What happens next</p>
+                  <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                    <li>Automated checks on your documents are completed</li>
+                    <li>An AICTE officer reviews the application</li>
+                    <li>You receive a decision or a deficiency notice</li>
+                  </ol>
                 </div>
-                <p className="text-sm text-gray-500 mb-5">{processResult.findings_count} findings · {processResult.rule_results_count} rules checked</p>
-                <button
-                  onClick={() => navigate(`/application/${createdAppId}`)}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700"
-                >
-                  View Full Report →
-                </button>
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  <Link
+                    to={`/track?id=${createdAppId}`}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+                  >
+                    Track Application Status
+                  </Link>
+                  <button
+                    onClick={() => window.location.assign('/apply')}
+                    className="bg-white text-gray-700 border border-gray-300 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50"
+                  >
+                    Go Back to Application Portal
+                  </button>
+                </div>
               </>
             )}
           </div>

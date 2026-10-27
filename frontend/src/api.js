@@ -39,6 +39,12 @@ export async function getApplicationReport(appId) {
   return res.data;
 }
 
+/** Applicant-safe status lookup (no scores or findings). */
+export async function getApplicationStatus(appId) {
+  const res = await api.get(`/applications/${appId}/status`);
+  return res.data;
+}
+
 /** Get the audit log for an application. */
 export async function getAuditLog(appId) {
   const res = await api.get(`/applications/${appId}/audit-log`);

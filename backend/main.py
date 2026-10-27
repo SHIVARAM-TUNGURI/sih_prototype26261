@@ -123,6 +123,60 @@ def get_application(app_id: int, db: Session = Depends(get_db)):
     return record
 
 
+@app.get("/applications/{app_id}/status")
+def get_application_status(app_id: int, db: Session = Depends(get_db)):
+    """
+    Applicant-facing status lookup.
+    Deliberately returns NO scores, findings, rule results or routing - only
+    the stage of the application and any message the officer chose to send.
+    """
+    record = db.query(Application).filter(Application.id == app_id).first()
+    if not record:
+        raise HTTPException(404, "Application not found")
+
+    # Internal statuses -> what the applicant is allowed to see
+    stage_map = {
+        "submitted":  ("under_review", "Under Review"),
+        "processing": ("under_review", "Under Review"),
+        "processed":  ("under_review", "Under Review"),
+        "deficiency": ("query_raised", "Query Raised"),
+        "approved":   ("approved", "Approved"),
+        "rejected":   ("rejected", "Rejected"),
+    }
+    code, label = stage_map.get(record.status, ("under_review", "Under Review"))
+
+    messages = {
+        "under_review": "Your application has been received and is being reviewed by an AICTE officer.",
+        "query_raised": "The reviewing officer has raised a query. Please read the message below and respond with the requested clarification or documents.",
+        "approved": "Your application has been approved.",
+        "rejected": "Your application has been rejected.",
+    }
+
+    officer_message = None
+    if code in ("query_raised", "approved", "rejected"):
+        wanted = {"query_raised": "raise_deficiency", "approved": "approve", "rejected": "reject"}[code]
+        latest = (
+            db.query(AuditLog)
+            .filter(AuditLog.application_id == app_id, AuditLog.action == wanted)
+            .order_by(AuditLog.timestamp.desc())
+            .first()
+        )
+        if latest and latest.details:
+            officer_message = latest.details
+
+    return {
+        "application_id": record.id,
+        "institution_name": record.institution_name,
+        "application_type": record.application_type,
+        "status_code": code,
+        "status_label": label,
+        "message": messages[code],
+        "officer_message": officer_message,
+        "submitted_on": record.created_at.isoformat() if record.created_at else None,
+        "last_updated": record.updated_at.isoformat() if record.updated_at else None,
+    }
+
+
 # ── 2  Document Upload ───────────────────────────────────────────────────────
 
 @app.post("/applications/{app_id}/documents", response_model=list[DocumentResponse])
