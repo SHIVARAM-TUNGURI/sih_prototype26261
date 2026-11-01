@@ -117,7 +117,7 @@ export default function ApplicationDetail() {
       <div className="max-w-4xl mx-auto px-4 py-12 text-center">
         <AlertTriangle size={40} className="text-red-400 mx-auto mb-3" />
         <p className="text-red-600 font-medium">{error}</p>
-        <button onClick={() => navigate('/')} className="mt-4 text-blue-600 hover:underline text-sm">← Back to Dashboard</button>
+        <button onClick={() => navigate('/dashboard')} className="mt-4 text-blue-600 hover:underline text-sm">← Back to Dashboard</button>
       </div>
     </div>
   );
@@ -138,7 +138,7 @@ export default function ApplicationDetail() {
       {/* ── Header ── */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <button onClick={() => navigate('/')} className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600 mb-3">
+          <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600 mb-3">
             <ArrowLeft size={16} /> Back to Dashboard
           </button>
           <div className="flex flex-wrap items-start justify-between gap-4">
